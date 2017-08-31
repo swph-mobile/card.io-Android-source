@@ -463,6 +463,7 @@ public final class CardIOActivity extends Activity {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             View decorView = getWindow().getDecorView();
             // Hide the status bar.
+            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
             decorView.setSystemUiVisibility(uiOptions);
             // Remember that you should never show the action bar if the
             // status bar is hidden, so hide that too if necessary.
