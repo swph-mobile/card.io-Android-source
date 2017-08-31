@@ -35,6 +35,7 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -275,7 +276,7 @@ public final class CardIOActivity extends Activity {
 
     private static final float UIBAR_VERTICAL_MARGIN_DP = 15.0f;
 
-    private static final long[] VIBRATE_PATTERN = { 0, 70, 10, 40 };
+    private static final long[] VIBRATE_PATTERN = {0, 70, 10, 40};
 
     private static final int TOAST_OFFSET_Y = -75;
 
@@ -298,8 +299,10 @@ public final class CardIOActivity extends Activity {
     private boolean waitingForPermission;
 
     private RelativeLayout mUIBar;
-    private FrameLayout mMainLayout;
+    private RelativeLayout mTitleLayout;
+    private FrameLayout mMainLayout, previewFrame;
     private boolean useApplicationTheme;
+    private ImageButton arrowView;
 
     static private int numActivityAllocations;
 
@@ -371,7 +374,7 @@ public final class CardIOActivity extends Activity {
         if (clientData.getBooleanExtra(EXTRA_NO_CAMERA, false)) {
             Log.i(Util.PUBLIC_LOG_TAG, "EXTRA_NO_CAMERA set to true. Skipping camera.");
             manualEntryFallbackOrForced = true;
-        } else if (!CardScanner.processorSupported()){
+        } else if (!CardScanner.processorSupported()) {
             Log.i(Util.PUBLIC_LOG_TAG, "Processor not Supported. Skipping camera.");
             manualEntryFallbackOrForced = true;
         } else {
@@ -397,6 +400,13 @@ public final class CardIOActivity extends Activity {
                 handleGeneralExceptionError(e);
             }
         }
+        arrowView = (ImageButton)findViewById(R.id.partial_toolbar_arrow_view);
+        arrowView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
     }
 
@@ -453,7 +463,6 @@ public final class CardIOActivity extends Activity {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             View decorView = getWindow().getDecorView();
             // Hide the status bar.
-            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
             decorView.setSystemUiVisibility(uiOptions);
             // Remember that you should never show the action bar if the
             // status bar is hidden, so hide that too if necessary.
@@ -477,8 +486,8 @@ public final class CardIOActivity extends Activity {
                 Class<?> testScannerClass = Class.forName("io.card.payment.CardScannerTester");
                 Constructor<?> cons = testScannerClass.getConstructor(this.getClass(),
                         Integer.TYPE);
-                mCardScanner = (CardScanner) cons.newInstance(new Object[] { this,
-                        mFrameOrientation });
+                mCardScanner = (CardScanner) cons.newInstance(new Object[]{this,
+                        mFrameOrientation});
             } else {
                 mCardScanner = new CardScanner(this, mFrameOrientation);
             }
@@ -498,6 +507,7 @@ public final class CardIOActivity extends Activity {
             handleGeneralExceptionError(e);
         }
     }
+
 
     private void handleGeneralExceptionError(Exception e) {
         StringKey errorKey = StringKey.ERROR_CAMERA_UNEXPECTED_FAIL;
@@ -544,10 +554,13 @@ public final class CardIOActivity extends Activity {
             setDeviceDegrees(degrees);
             if (degrees == 90) {
                 rotateCustomOverlay(270);
+                rotateTitle(270);
             } else if (degrees == 270) {
                 rotateCustomOverlay(90);
+                rotateTitle(90);
             } else {
                 rotateCustomOverlay(degrees);
+                rotateTitle(degrees);
             }
         }
     }
@@ -794,9 +807,9 @@ public final class CardIOActivity extends Activity {
         float sf;
         if (mFrameOrientation == ORIENTATION_PORTRAIT
                 || mFrameOrientation == ORIENTATION_PORTRAIT_UPSIDE_DOWN) {
-            sf = mGuideFrame.right / (float)CardScanner.CREDIT_CARD_TARGET_WIDTH * .95f;
+            sf = mGuideFrame.right / (float) CardScanner.CREDIT_CARD_TARGET_WIDTH * .95f;
         } else {
-            sf = mGuideFrame.right / (float)CardScanner.CREDIT_CARD_TARGET_WIDTH * 1.15f;
+            sf = mGuideFrame.right / (float) CardScanner.CREDIT_CARD_TARGET_WIDTH * 1.15f;
         }
 
         Matrix m = new Matrix();
@@ -933,16 +946,25 @@ public final class CardIOActivity extends Activity {
 
         // top level container
         mMainLayout = new FrameLayout(this);
-        mMainLayout.setBackgroundColor(Color.BLACK);
+        mMainLayout.setBackgroundColor(getResources().getColor(R.color.bg_color));
         mMainLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
+        mTitleLayout = new RelativeLayout(this);
+        mTitleLayout.setPadding(0, getStatusBarHeight(), 0 , 0);
 
-        FrameLayout previewFrame = new FrameLayout(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        View titleView = inflater.inflate(R.layout.cio_activity_card_scanner, mTitleLayout, false);
+        mTitleLayout.addView(titleView);
+
+        previewFrame = new FrameLayout(this);
         previewFrame.setId(FRAME_ID);
 
         mPreview = new Preview(this, null, mCardScanner.mPreviewWidth, mCardScanner.mPreviewHeight);
         mPreview.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT, Gravity.TOP));
+
+        previewFrame.addView(mTitleLayout);
         previewFrame.addView(mPreview);
 
         mOverlay = new OverlayView(this, null, Util.deviceSupportsTorch(this));
@@ -1008,7 +1030,7 @@ public final class CardIOActivity extends Activity {
             });
             mUIBar.addView(keyboardBtn);
             ViewUtil.styleAsButton(keyboardBtn, false, this, useApplicationTheme);
-            if(!useApplicationTheme){
+            if (!useApplicationTheme) {
                 keyboardBtn.setTextSize(Appearance.TEXT_SIZE_SMALL_BUTTON);
             }
             keyboardBtn.setMinimumHeight(ViewUtil.typedDimensionValueToPixelsInt(
@@ -1045,8 +1067,6 @@ public final class CardIOActivity extends Activity {
                 customOverlayLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT));
 
-                LayoutInflater inflater = this.getLayoutInflater();
-
                 inflater.inflate(resourceId, customOverlayLayout);
                 mMainLayout.addView(customOverlayLayout);
             }
@@ -1069,6 +1089,20 @@ public final class CardIOActivity extends Activity {
         }
     }
 
+    private void rotateTitle(float degrees) {
+        if (mTitleLayout != null) {
+            float pivotX = mTitleLayout.getWidth() / 2;
+            float pivotY = mTitleLayout.getHeight() / 2;
+
+            Animation an = new RotateAnimation(0, degrees, pivotX, pivotY);
+            an.setDuration(0);
+            an.setRepeatCount(0);
+            an.setFillAfter(true);
+
+            mTitleLayout.setAnimation(an);
+        }
+    }
+
     private void setResultAndFinish(final int resultCode, final Intent data) {
         setResult(resultCode, data);
         markedCardImage = null;
@@ -1083,4 +1117,12 @@ public final class CardIOActivity extends Activity {
         return mOverlay.getTorchRect();
     }
 
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
 }

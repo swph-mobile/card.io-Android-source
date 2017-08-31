@@ -4,6 +4,7 @@ package io.card.payment;
  * See the file "LICENSE.md" for the full license governing this code.
  */
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,6 +16,9 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DateKeyListener;
 import android.text.method.DigitsKeyListener;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -22,6 +26,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -108,24 +113,26 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
         int paddingPx = ViewUtil.typedDimensionValueToPixelsInt(PADDING_DIP, this);
 
         RelativeLayout container = new RelativeLayout(this);
+        LayoutInflater inflater = getLayoutInflater();
+        RelativeLayout titleView = (RelativeLayout) inflater.inflate(R.layout.cio_activity_card_scanner, container, false);
+        container.setBackgroundColor(getResources().getColor(R.color.bg_color));
+//        container.addView(titleView, titleParams);
         if( !useApplicationTheme ) {
             container.setBackgroundColor(Appearance.DEFAULT_BACKGROUND_COLOR);
         }
-        ScrollView scrollView = new ScrollView(this);
-        scrollView.setId(viewIdCounter++);
-        RelativeLayout.LayoutParams scrollParams = new RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        scrollParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        container.addView(scrollView, scrollParams);
-
-        LinearLayout wrapperLayout = new LinearLayout(this);
-        wrapperLayout.setOrientation(LinearLayout.VERTICAL);
-        scrollView.addView(wrapperLayout, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
         LinearLayout mainLayout = new LinearLayout(this);
+        mainLayout.setBackgroundColor(getResources().getColor(R.color.bg_color));
         mainLayout.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams mainParams = new LinearLayout.LayoutParams(
+        RelativeLayout.LayoutParams mainParams = new RelativeLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+        mainParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+
+        ActionBar actionBar = getActionBar();
+        if (null != actionBar) {
+            actionBar.hide();
+        }
 
         capture = getIntent().getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
 
@@ -138,14 +145,13 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
 
             LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            cardView.setPadding(0, 0, 0, paddingPx);
-            cardParams.weight = 1;
 
+            cardParams.gravity = Gravity.CENTER_VERTICAL;
+            cardParams.weight = 1;
             // static access is necessary, else we see weird crashes on some devices.
             cardView.setImageBitmap(io.card.payment.CardIOActivity.markedCardImage);
 
             mainLayout.addView(cardView, cardParams);
-            ViewUtil.setMargins(cardView, null, null, null, Appearance.VERTICAL_SPACING);
 
         } else {
 
@@ -342,70 +348,25 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
             postalCodeValidator = new AlwaysValid();
         }
 
-        mainLayout.addView(optionLayout, optionLayoutParam);
-
         addCardholderNameIfNeeded(mainLayout);
 
-        wrapperLayout.addView(mainLayout, mainParams);
-        ViewUtil.setMargins(mainLayout, Appearance.CONTAINER_MARGIN_HORIZONTAL,
-                Appearance.CONTAINER_MARGIN_VERTICAL, Appearance.CONTAINER_MARGIN_HORIZONTAL,
-                Appearance.CONTAINER_MARGIN_VERTICAL);
+        ViewUtil.setPadding(mainLayout, Appearance.CONTAINER_MARGIN_HORIZONTAL ,null,Appearance.CONTAINER_MARGIN_HORIZONTAL,null);
+        container.addView(mainLayout, mainParams);
+        container.addView(titleView);
 
-        LinearLayout buttonLayout = new LinearLayout(this);
-        buttonLayout.setId(viewIdCounter++);
-        RelativeLayout.LayoutParams buttonLayoutParam = new RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        buttonLayoutParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        buttonLayout.setPadding(0, paddingPx, 0, 0);
-        buttonLayout.setBackgroundColor(Color.TRANSPARENT);
+        TextView reminderText = new TextView(this);
+        reminderText.setText("Please verify card number.");
+        reminderText.setTextColor(getResources().getColor(R.color.text_color));
+        reminderText.setTextSize(16.0f);
+        RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        textParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+        textParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 
-        scrollParams.addRule(RelativeLayout.ABOVE, buttonLayout.getId());
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
-        doneBtn = new Button(this);
-        LinearLayout.LayoutParams doneParam = new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1);
-
-        doneBtn.setText(LocalizedStrings.getString(StringKey.DONE));
-        doneBtn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                completed();
-            }
-        });
-
-        doneBtn.setEnabled(false);
-
-        buttonLayout.addView(doneBtn, doneParam);
-        ViewUtil.styleAsButton(doneBtn, true, this, useApplicationTheme);
-        ViewUtil.setPadding(doneBtn, "5dip", null, "5dip", null);
-        ViewUtil.setMargins(doneBtn, "8dip", "8dip", "8dip", "8dip");
-        if(!useApplicationTheme) {
-            doneBtn.setTextSize(Appearance.TEXT_SIZE_MEDIUM_BUTTON);
-        }
-
-        cancelBtn = new Button(this);
-
-        LinearLayout.LayoutParams cancelParam = new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1);
-        cancelBtn.setText(LocalizedStrings.getString(StringKey.CANCEL));
-
-        cancelBtn.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-
-        buttonLayout.addView(cancelBtn, cancelParam);
-        ViewUtil.styleAsButton(cancelBtn, false, this, useApplicationTheme);
-        ViewUtil.setPadding(cancelBtn, "5dip", null, "5dip", null);
-        ViewUtil.setMargins(cancelBtn, "4dip", "8dip", "8dip", "8dip");
-        if(!useApplicationTheme) {
-            cancelBtn.setTextSize(Appearance.TEXT_SIZE_MEDIUM_BUTTON);
-        }
-        container.addView(buttonLayout, buttonLayoutParam);
-
-        ActivityHelper.addActionBarIfSupported(this);
+        textParams.setMargins(0, 0, 0, displayMetrics.heightPixels/6);
+        container.addView(reminderText, textParams);
 
         setContentView(container);
 
@@ -421,8 +382,22 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
             afterTextChanged(expiryEdit.getEditableText());
         }
 
-        ActivityHelper.setupActionBarIfSupported(this, activityTitleTextView,
-                LocalizedStrings.getString(StringKey.MANUAL_ENTRY_TITLE), "card.io - ", icon);
+        ImageButton mSaveUserDetailsButton = titleView.findViewById(R.id.partial_toolbar_check_view);
+        mSaveUserDetailsButton.setVisibility(View.VISIBLE);
+        mSaveUserDetailsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                completed();
+            }
+        });
+
+        ImageButton arrowView = titleView.findViewById(R.id.partial_toolbar_arrow_view);
+        arrowView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
     }
 
     private void completed() {
@@ -460,7 +435,7 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
         getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         ActivityHelper.setFlagSecure(this);
 
-        validateAndEnableDoneButtonIfValid();
+//        validateAndEnableDoneButtonIfValid();
 
         if (numberEdit == null && expiryEdit != null && !expiryValidator.isValid()) {
             expiryEdit.requestFocus();

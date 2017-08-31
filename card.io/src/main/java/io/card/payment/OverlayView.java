@@ -177,19 +177,32 @@ class OverlayView extends View {
             mRotationFlip = 1;
         }
         if (mCameraPreviewRect != null) {
-            Point torchPoint = new Point(mCameraPreviewRect.left + topEdgeUIOffset.x,
-                    mCameraPreviewRect.top + topEdgeUIOffset.y);
+            if(mRotationFlip == 1) {
+                Point torchPoint = new Point(mCameraPreviewRect.right - topEdgeUIOffset.x,
+                        mCameraPreviewRect.bottom - topEdgeUIOffset.y);
+                // mTorchRect used only for touch lookup, not layout
+                mTorchRect = Util.rectGivenCenter(torchPoint, (int) (TORCH_WIDTH * mScale),
+                        (int) (TORCH_HEIGHT * mScale));
 
-            // mTorchRect used only for touch lookup, not layout
-            mTorchRect = Util.rectGivenCenter(torchPoint, (int) (TORCH_WIDTH * mScale),
-                    (int) (TORCH_HEIGHT * mScale));
+                // mLogoRect used only for touch lookup, not layout
+                Point logoPoint = new Point(mCameraPreviewRect.right - topEdgeUIOffset.x,
+                        mCameraPreviewRect.top + topEdgeUIOffset.y);
+                mLogoRect = Util.rectGivenCenter(logoPoint, (int) (LOGO_MAX_WIDTH * mScale),
+                        (int) (LOGO_MAX_HEIGHT * mScale));
 
-            // mLogoRect used only for touch lookup, not layout
-            Point logoPoint = new Point(mCameraPreviewRect.right - topEdgeUIOffset.x,
-                    mCameraPreviewRect.top + topEdgeUIOffset.y);
-            mLogoRect = Util.rectGivenCenter(logoPoint, (int) (LOGO_MAX_WIDTH * mScale),
-                    (int) (LOGO_MAX_HEIGHT * mScale));
+            } else {
+                Point torchPoint = new Point(mCameraPreviewRect.left + topEdgeUIOffset.x,
+                        mCameraPreviewRect.bottom - topEdgeUIOffset.y);
+                // mTorchRect used only for touch lookup, not layout
+                mTorchRect = Util.rectGivenCenter(torchPoint, (int) (TORCH_WIDTH * mScale),
+                        (int) (TORCH_HEIGHT * mScale));
 
+                // mLogoRect used only for touch lookup, not layout
+                Point logoPoint = new Point(mCameraPreviewRect.right - topEdgeUIOffset.x,
+                        mCameraPreviewRect.top + topEdgeUIOffset.y);
+                mLogoRect = Util.rectGivenCenter(logoPoint, (int) (LOGO_MAX_WIDTH * mScale),
+                        (int) (LOGO_MAX_HEIGHT * mScale));
+            }
             int[] gradientColors = { Color.WHITE, Color.BLACK };
             Orientation gradientOrientation = GRADIENT_ORIENTATIONS[(mRotation / 90) % 4];
             mGradientDrawable = new GradientDrawable(gradientOrientation, gradientColors);
@@ -337,11 +350,13 @@ class OverlayView extends View {
                         mGuidePaint);
             }
 
+            canvas.save();
             if (mDInfo.numVisibleEdges() < 3) {
                 // Draw guide text
                 // Set up paint attributes
                 float guideHeight = GUIDE_LINE_HEIGHT * mScale;
                 float guideFontSize = GUIDE_FONT_SIZE * mScale;
+                scanInstructions = "Please put card in the area\nand align the edge";
 
                 Util.setupTextPaintStyle(mGuidePaint);
                 mGuidePaint.setTextAlign(Align.CENTER);
