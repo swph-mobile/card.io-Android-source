@@ -952,6 +952,11 @@ public final class CardIOActivity extends Activity {
                 LayoutParams.MATCH_PARENT));
         mTitleLayout = new RelativeLayout(this);
         mTitleLayout.setPadding(0, getStatusBarHeight(), 0 , 0);
+        LinearLayout statusBarLayout = new LinearLayout(this);
+        statusBarLayout.setBackgroundColor(getResources().getColor(R.color.toolbar_color));
+        LinearLayout.LayoutParams statusBarParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, getStatusBarHeight());
+
+        mMainLayout.addView(statusBarLayout, statusBarParams);
 
         LayoutInflater inflater = this.getLayoutInflater();
 
