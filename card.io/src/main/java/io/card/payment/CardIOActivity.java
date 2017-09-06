@@ -400,14 +400,6 @@ public final class CardIOActivity extends Activity {
                 handleGeneralExceptionError(e);
             }
         }
-        arrowView = (ImageButton)findViewById(R.id.partial_toolbar_arrow_view);
-        arrowView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
-
     }
 
     private void android23AndAboveHandleCamera() {
@@ -1077,6 +1069,14 @@ public final class CardIOActivity extends Activity {
                 mMainLayout.addView(customOverlayLayout);
             }
         }
+
+        arrowView = (ImageButton) mTitleLayout.findViewById(R.id.partial_toolbar_arrow_view);
+        arrowView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         this.setContentView(mMainLayout);
     }
