@@ -259,6 +259,8 @@ public final class CardIOActivity extends Activity {
      */
     public static final int RESULT_CONFIRMATION_SUPPRESSED = lastResult++;
 
+    public static final String EXTRA_TOOLBAR_COLOR = "io.card.payment.color";
+
     private static final String TAG = CardIOActivity.class.getSimpleName();
 
     private static final int DEGREE_DELTA = 15;
@@ -826,6 +828,7 @@ public final class CardIOActivity extends Activity {
         final Intent origIntent = getIntent();
         if (origIntent != null && origIntent.getBooleanExtra(EXTRA_SUPPRESS_CONFIRMATION, false)) {
             Intent dataIntent = new Intent(CardIOActivity.this, DataEntryActivity.class);
+            dataIntent.putExtra(EXTRA_TOOLBAR_COLOR, getIntent().getIntExtra(EXTRA_TOOLBAR_COLOR, 0));
             if (mDetectedCard != null) {
                 dataIntent.putExtra(EXTRA_SCAN_RESULT, mDetectedCard);
                 mDetectedCard = null;
@@ -945,7 +948,8 @@ public final class CardIOActivity extends Activity {
         mTitleLayout = new RelativeLayout(this);
         mTitleLayout.setPadding(0, getStatusBarHeight(), 0 , 0);
         LinearLayout statusBarLayout = new LinearLayout(this);
-        statusBarLayout.setBackgroundColor(getResources().getColor(R.color.cio_toolbar_color));
+        statusBarLayout.setBackgroundColor(getIntent().getIntExtra(EXTRA_TOOLBAR_COLOR,0));
+
         LinearLayout.LayoutParams statusBarParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, getStatusBarHeight());
 
         mMainLayout.addView(statusBarLayout, statusBarParams);
@@ -953,6 +957,7 @@ public final class CardIOActivity extends Activity {
         LayoutInflater inflater = this.getLayoutInflater();
 
         View titleView = inflater.inflate(R.layout.cio_activity_card_scanner, mTitleLayout, false);
+        titleView.setBackgroundColor(getIntent().getIntExtra(EXTRA_TOOLBAR_COLOR,0));
         mTitleLayout.addView(titleView);
 
         previewFrame = new FrameLayout(this);

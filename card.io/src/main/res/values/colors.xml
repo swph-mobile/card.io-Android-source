@@ -3,6 +3,5 @@
 
     <color name="cio_bg_color">#F3F3F3</color>
     <color name="cio_text_color">#616161</color>
-    <color name="cio_toolbar_color">#F00065</color>
     <color name="cio_toolbar_text_color">#FFFFFF</color>
 </resources>

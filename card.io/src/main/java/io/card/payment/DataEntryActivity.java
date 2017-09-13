@@ -118,6 +118,8 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
         LayoutInflater inflater = getLayoutInflater();
         RelativeLayout titleView = (RelativeLayout) inflater.inflate(R.layout.cio_activity_card_scanner, container, false);
         container.setBackgroundColor(getResources().getColor(R.color.cio_bg_color));
+        titleView.setBackgroundColor(getIntent().getIntExtra(CardIOActivity.EXTRA_TOOLBAR_COLOR, 0));
+
 //        container.addView(titleView, titleParams);
         if( !useApplicationTheme ) {
             container.setBackgroundColor(Appearance.DEFAULT_BACKGROUND_COLOR);
@@ -371,7 +373,7 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
             //Do what you need for this SDK
             Window window = this.getWindow();
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.cio_toolbar_color));
+            window.setStatusBarColor(getIntent().getIntExtra(CardIOActivity.EXTRA_TOOLBAR_COLOR, 0));
         };
 
         textParams.setMargins(0, 0, 0, displayMetrics.heightPixels/6);
