@@ -939,13 +939,13 @@ public final class CardIOActivity extends Activity {
 
         // top level container
         mMainLayout = new FrameLayout(this);
-        mMainLayout.setBackgroundColor(getResources().getColor(R.color.bg_color));
+        mMainLayout.setBackgroundColor(getResources().getColor(R.color.cio_bg_color));
         mMainLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
         mTitleLayout = new RelativeLayout(this);
         mTitleLayout.setPadding(0, getStatusBarHeight(), 0 , 0);
         LinearLayout statusBarLayout = new LinearLayout(this);
-        statusBarLayout.setBackgroundColor(getResources().getColor(R.color.toolbar_color));
+        statusBarLayout.setBackgroundColor(getResources().getColor(R.color.cio_toolbar_color));
         LinearLayout.LayoutParams statusBarParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, getStatusBarHeight());
 
         mMainLayout.addView(statusBarLayout, statusBarParams);

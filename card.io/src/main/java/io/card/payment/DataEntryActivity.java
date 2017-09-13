@@ -117,14 +117,14 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
         RelativeLayout container = new RelativeLayout(this);
         LayoutInflater inflater = getLayoutInflater();
         RelativeLayout titleView = (RelativeLayout) inflater.inflate(R.layout.cio_activity_card_scanner, container, false);
-        container.setBackgroundColor(getResources().getColor(R.color.bg_color));
+        container.setBackgroundColor(getResources().getColor(R.color.cio_bg_color));
 //        container.addView(titleView, titleParams);
         if( !useApplicationTheme ) {
             container.setBackgroundColor(Appearance.DEFAULT_BACKGROUND_COLOR);
         }
 
         LinearLayout mainLayout = new LinearLayout(this);
-        mainLayout.setBackgroundColor(getResources().getColor(R.color.bg_color));
+        mainLayout.setBackgroundColor(getResources().getColor(R.color.cio_bg_color));
         mainLayout.setOrientation(LinearLayout.VERTICAL);
         RelativeLayout.LayoutParams mainParams = new RelativeLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -358,7 +358,7 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
 
         TextView reminderText = new TextView(this);
         reminderText.setText("Please verify card number.");
-        reminderText.setTextColor(getResources().getColor(R.color.text_color));
+        reminderText.setTextColor(getResources().getColor(R.color.cio_text_color));
         reminderText.setTextSize(16.0f);
         RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         textParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
@@ -371,7 +371,7 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
             //Do what you need for this SDK
             Window window = this.getWindow();
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.toolbar_color));
+            window.setStatusBarColor(getResources().getColor(R.color.cio_toolbar_color));
         };
 
         textParams.setMargins(0, 0, 0, displayMetrics.heightPixels/6);
