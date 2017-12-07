@@ -393,7 +393,7 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
             afterTextChanged(expiryEdit.getEditableText());
         }
 
-        ImageButton mSaveUserDetailsButton = titleView.findViewById(R.id.partial_toolbar_check_view);
+        ImageButton mSaveUserDetailsButton = (ImageButton) titleView.findViewById(R.id.partial_toolbar_check_view);
         mSaveUserDetailsButton.setVisibility(View.VISIBLE);
         mSaveUserDetailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -402,7 +402,7 @@ public final class DataEntryActivity extends Activity implements TextWatcher {
             }
         });
 
-        ImageButton arrowView = titleView.findViewById(R.id.partial_toolbar_arrow_view);
+        ImageButton arrowView = (ImageButton) titleView.findViewById(R.id.partial_toolbar_arrow_view);
         arrowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
