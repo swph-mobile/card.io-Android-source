@@ -21,7 +21,7 @@
 
 
     <TextView
-        android:id="@+id/partial_toolbar_arrow_title"
+        android:id="@+id/partial_toolbar_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/partial_toolbar_arrow_view"
