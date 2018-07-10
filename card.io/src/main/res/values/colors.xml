@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">@color/colorPrimaryDark</color>
+
     <color name="cio_bg_color">#F3F3F3</color>
-    <color name="cio_text_color">#616161</color>
-    <color name="cio_toolbar_text_color">#FFFFFF</color>
+    <color name="cio_text_color">@color/colorAccent</color>
+    <color name="cio_toolbar_text_color">@color/colorAccent</color>
 </resources>
