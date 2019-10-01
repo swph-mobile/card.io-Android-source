@@ -32,7 +32,7 @@ android {
 
         consumerProguardFiles 'release-proguard.cfg'
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     resourcePrefix 'cio_'
