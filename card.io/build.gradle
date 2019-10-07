@@ -79,7 +79,7 @@ android {
 
 dependencies {
     testImplementation "junit:junit:4.12"
-    testImplementation "org.robolectric:robolectric:3.1.2"
+    testImplementation "org.robolectric:robolectric:4.3"
 }
 
 // TODO remove the variant specific stuff from below - card.io doesn't have flavors
@@ -99,10 +99,10 @@ android.libraryVariants.all { variant ->
     task "${variantName}Doc"(dependsOn: "compile${variantName.capitalize()}JavaWithJavac", type: Javadoc) {
         description = "Generates javadoc for build $name"
         destinationDir = new File(destinationDir, variantName)
-        source = variant.javaCompile.source
+        source = variant.javaCompileProvider.get().source
         def variantCompiledClassesDir = file("${buildDir}/intermediates/classes/${variant.dirName}/")
         classpath = files(
-                variant.javaCompile.classpath,
+                variant.javaCompileProvider.get().classpath,
                 variantCompiledClassesDir,
                 android.bootClasspath
         )
