@@ -12,5 +12,5 @@ task assemble {}
 
 ext {
     sdkVersion = 25
-    buildToolsVersion = '33.0.2'
+    buildToolsVersion = '35.0.0'
 }
